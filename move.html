@@ -1,0 +1,271 @@
+<html>
+<head>
+    <style>
+        body {
+          background-color: rgb(153, 150, 145);
+        }
+        #container {
+          position: relative;
+          width: 250px;
+          height: 220px;
+          margin: 1em auto;
+        }
+
+        #testPosRaton {
+          border: 1px solid #d9d9d9;
+          width: 250px;
+          height: 220px;
+        }
+
+        .output {
+          position: absolute;
+          top: 50px;
+          left: 50px;
+          width: 200px;
+          height: 100px;
+          text-align: right;
+          border: 1px solid #1a1919;
+          box-shadow: 0px 0px 14px 0px rgba(0,0,0,0.29);
+          background-color: rgb(0, 0, 0);
+        }
+        .content {
+          position: absolute;
+          text-align: center;
+          background-color: rgb(66, 62, 62);
+          color: whitesmoke;
+          height: 80%;
+          width: 100%;
+          bottom: 0;
+        }
+        .output:hover {
+          cursor: move;
+        }
+        .close:hover{
+          cursor: pointer;
+        }
+        .content:hover {
+          cursor: default;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+<body id="all">
+    <button onclick="agregarWindow();">Agregar ventana</button>
+    <button onclick="closeWindows();">Cerrar todo</button>
+    <div class="output" id="output0"><button class="close" id="0">X</button><div class="content" id="put0">asd<input type="text" name="asd" id="asd"></div></div>
+    <div class="output" id="output1"><button class="close" id="1">X</button><div class="content" id="put1">usuario</div></div>
+    <div class="output" id="output2"><button class="close" id="2">X</button><div class="content" id="put2">asjdlj212e</div></div>
+    <div class="output" id="output3"><button class="close" id="3">X</button><div class="content" id="put3">qweqwe</div></div>
+    <form action="" target = "move.html" name="finalForm" id="finalForm" method="get"></form>
+    <script>
+        const obj = {
+          //"output99" : {xPos2:12,yPos2:13},
+        };
+        let maxVentanas = 100;
+
+        const bod = document.getElementById("all");
+        const output = Array.from(document.getElementsByClassName("output"));
+
+        output.forEach(n => {
+          obj[n.id] = {
+            xPos:100,
+            yPos:100,
+            xOff:10,
+            yOff:10,
+            moveFlag:false,
+            moveAux:false
+          };
+          moveCoord(n.id);
+        });
+        output.forEach(n => {n.addEventListener("mousedown", e => calcOffset(n.id, e));});
+        output.forEach(n => {n.addEventListener("mouseup", e => setPos(n.id));});
+        Array.from(document.getElementsByClassName("content")).forEach(n => {n.addEventListener("mousedown", e => desCalc(n.id));});
+        Array.from(document.getElementsByClassName("close")).forEach(n => {n.addEventListener("mousedown", e => rmv(n.id));});
+        bod.addEventListener("mouseup", e => clearFlags());
+		    bod.addEventListener("mousemove", e => updateWindows(e));
+        output.splice(0, output.length);
+
+        function clearFlags () {
+          let x = 0;
+          for (let i = 0; i < Object.keys(obj).length; i++) {
+            while(obj["output"+x]===undefined && (x < maxVentanas)) x++;
+            obj["output"+x].moveFlag = false;
+            x++;
+          }
+        }
+
+        function updateWindows(evt) {
+          //let hoy = new Date();
+          //let passed = hoy.getTime();
+          let i = 0;
+          let x = 0;
+          if(!Object.keys(obj).length) return;
+          while ( i < Object.keys(obj).length) {
+            while(obj["output"+x]===undefined && (x < maxVentanas)) x++;         // Busco las key que existen, asi puedo ir sumando i hasta tener la totalidad de keys validas (ya que pueden saltearse numeros), el max es por precaucion
+            if(x === maxVentanas) return;
+            if(obj["output"+x].moveFlag) break;
+            i++;
+            x++;
+          }
+          if(i === (Object.keys(obj).length) ) return;
+		      let mousePos = oMousePos(bod, evt);
+          if(obj["output"+x].moveFlag) {
+            obj["output"+x].xPos = mousePos.x - obj["output"+x].xOff;
+            obj["output"+x].yPos = mousePos.y - obj["output"+x].yOff;
+            moveCoord("output"+x);
+          }
+          //hoy = new Date();
+          //passed = hoy.getTime() - passed;
+          //console.log(passed);
+        }
+
+      
+        function calcOffset (id, evt) {
+          if(obj[id]===undefined) return;
+          let mousePos = oMousePos(bod, evt);
+          obj[id].xOff = mousePos.x - obj[id].xPos;
+          obj[id].yOff = mousePos.y - obj[id].yPos;
+          if(!obj[id].moveAux) obj[id].moveFlag=true;
+          bod.appendChild(document.getElementById(id));
+          lastId = id;
+        }
+      
+        function desCalc (id) {
+          let idd = "out"+id;
+          if(obj[idd]===undefined) return;
+          obj[idd].moveAux=true;
+        }
+
+        function rmv (id) {
+          let idd = 'output' + id;
+          if(lastId===idd) lastId = "";
+          if(obj[idd]===undefined) return;
+          document.getElementById(idd).remove();
+          delete obj[idd];
+        }
+
+        function setPos (id) {
+          if(obj[id]===undefined) return;
+          obj[id].moveFlag=false;
+          obj[id].moveAux=false;
+        }
+        
+        function moveCoord (id) {
+            document.getElementById(id).style.top = obj[id].yPos + "px";
+            document.getElementById(id).style.left = obj[id].xPos + "px";
+        }
+
+		    function oMousePos(element, evt) { 
+		      var ClientRect = element.getBoundingClientRect();
+		      return {
+		        x: Math.round(evt.clientX),
+		        y: Math.round(evt.clientY)
+		      }
+		    }
+
+        let lastId = "";
+        function agregarWindow () {
+          let x = 0;
+          while(obj["output"+x]!==undefined && (x < maxVentanas)) x++;
+          if(x === maxVentanas) return;
+          let elemDiv = document.createElement('div');
+          elemDiv.className = 'output';
+          let elemClose = document.createElement('button');
+          elemClose.className = 'close';
+          elemClose.innerHTML = 'X';
+          let elemCont = document.createElement('div');
+          elemCont.className = 'content';
+          elemDiv.appendChild(elemClose);
+          elemDiv.appendChild(elemCont);
+          document.body.appendChild(elemDiv);
+          let n = x;
+          let data = "";
+          data += '<form action="" target = "" name="theForm" id="theForm'+ n +'" method="get">Nuevooooo';
+          data += " " + n;
+          data += "<input type='text' onkeydown='return event.keyCode != " + "13" + "' name='campo" + n + "'/>";
+          data += "<input type='submit' value='Enviar'/>" + "</form>";
+          elemCont.innerHTML += data;
+          elemDiv.id = 'output' + n;
+          elemClose.id = n;
+          elemCont.id = 'put' + n;
+
+          // Para crearlo cerca de la ultima ventana
+          if(lastId === "") {
+            obj[elemDiv.id] = {
+            xPos:50,
+            yPos:50,
+            xOff:0,
+            yOff:0,
+            moveFlag:false,
+            moveAux:false,
+            };
+          }
+          else {
+            obj[elemDiv.id] = {
+            xPos:obj[lastId].xPos+document.getElementById(lastId).clientWidth+30 > bod.clientWidth ? 50 : obj[lastId].xPos+20,
+            yPos:obj[lastId].yPos+document.getElementById(lastId).clientHeight+30 > bod.clientHeight ? 50 : obj[lastId].yPos+20,
+            xOff:0,
+            yOff:0,
+            moveFlag:false,
+            moveAux:false,
+            };
+          }
+          moveCoord(elemDiv.id);
+          lastId = elemDiv.id;
+          document.getElementById(elemDiv.id).addEventListener("mousedown", e => calcOffset(elemDiv.id, e));
+          document.getElementById(elemCont.id).addEventListener("mousedown", e => desCalc(elemCont.id));
+          document.getElementById(elemClose.id).addEventListener("mousedown", e => rmv(elemClose.id));
+          document.getElementById(elemDiv.id).addEventListener("mouseup", e => setPos(elemDiv.id));
+          //document.getElementById(("theForm"+n)).childNodes[2].addEventListener("mousedown", e => document.getElementById(("theForm"+n)).submit());
+          document.getElementById(("theForm"+n)).childNodes[2].addEventListener("mousedown", e => allsubmit());
+          document.getElementById(("theForm"+n)).childNodes[1].addEventListener("keydown", e => teclasubmit(e));
+        }
+
+        function allsubmit () {
+          //let hoy = new Date();
+          //let passed = hoy.getTime();
+          let x = 0;
+          let test = "";
+          while(x<100) {
+            if(document.getElementById(("theForm"+x))) {
+              let elemDiv = document.createElement('input');
+              elemDiv.nodeType="text";
+              elemDiv.name=document.getElementById(("theForm"+x)).childNodes[1].name;
+              elemDiv.value=document.getElementById(("theForm"+x)).childNodes[1].value;
+              document.getElementById(("theForm"+x)).childNodes[1].value="";
+              document.getElementById(("finalForm")).appendChild(elemDiv)
+            }
+          x++;
+          }
+          //console.log(document.getElementById("finalForm"));
+          document.getElementById("finalForm").submit();
+          while(document.getElementById("finalForm").childNodes.length) {
+            document.getElementById("finalForm").removeChild(document.getElementById("finalForm").childNodes[0]);
+          }
+          //console.log(document.getElementById("finalForm"));
+          //hoy = new Date();
+          //passed = hoy.getTime() - passed;
+          //console.log(passed);
+        }
+
+        function teclasubmit(evt) {
+          if (evt.keyCode == 13) {
+            allsubmit();
+          }
+        }
+
+        function closeWindows() {
+          let x = 0;
+          while(Object.keys(obj).length) {
+            rmv(x);
+            x++;
+          }
+        }
+    </script>
+</body>
+</html>
+
+<form action="arrows.html" method="post">
+
+</form>
