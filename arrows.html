@@ -1,0 +1,143 @@
+<html>
+    <head>
+        <style>
+            .cont {
+                height: fit-content;
+                width: fit-content;
+                font-size: 0px;
+                transition: 0.1s ease-in-out 0.05s;
+            }
+            .box {
+                background-color: white;
+                height: 14px;
+                width: 20px;
+                text-align: center;
+                align-content: center;
+                vertical-align: middle;
+            }
+            .fl,.fr {
+                margin-top: 5px;
+                height: 2px;
+                width: 10px;
+                background-color: black;
+                position:fixed;
+                transition: 0.1s ease-in-out 0.05s;
+            }
+            .fl {
+                transform: rotate(-45deg);
+            }
+            .fr {
+                left: 14px;
+                transform: rotate(45deg);
+            }
+            .effarea {
+                top:0;
+                left: 0;
+                position:relative;
+                width:100%;
+                height:100%;
+            }
+            .effarea:hover {
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            function rotate (rot) {
+                if(rot) {
+                    document.getElementById("fl").style.transform = "rotate(45deg)";
+                    document.getElementById("fr").style.transform = "rotate(-45deg)";
+                }
+                else {
+                    document.getElementById("fl").style.transform = "rotate(-45deg)";
+                    document.getElementById("fr").style.transform = "rotate(45deg)";
+                }
+            }
+
+            function rotate2 (i) {
+                const fl = Array.from(document.getElementsByClassName("fl"));
+                const fr = Array.from(document.getElementsByClassName("fr"));
+                const cont = Array.from(document.getElementsByClassName("cont"));
+
+                if(fl[i].style.transform === "rotate(45deg)")  {
+                    fl[i].style.transform = "rotate(-45deg)";
+                    fr[i].style.transform = "rotate(45deg)";
+                    cont[i].style.fontSize = "0px";
+                }
+                else {
+                    fl[i].style.transform = "rotate(45deg)";
+                    fr[i].style.transform = "rotate(-45deg)";
+                    cont[i].style.fontSize = "10px";
+                }
+            }
+
+            function toggle_rotate (i) {
+                const fl = Array.from(document.getElementsByClassName("fl"));
+                const fr = Array.from(document.getElementsByClassName("fr"));
+
+                if(fl[i].style.transform === "rotate(45deg)")
+                    fl[i].style.transform = "rotate(-45deg)";
+                else fl[i].style.transform = "rotate(45deg)";
+
+                if(fr[i].style.transform === "rotate(-45deg)")
+                    fr[i].style.transform = "rotate(45deg)";
+                else fr[i].style.transform = "rotate(-45deg)";
+            }
+        </script>
+    </head>
+    <body>
+        <div class="box">
+            <div class="fl"></div>
+            <div class="fr"></div>
+            <div class="effarea"></div>
+        </div>
+        <div class="cont">Hola</div>
+        <div class="box">
+            <div class="fl"></div>
+            <div class="fr"></div>
+            <div class="effarea"></div>
+        </div>
+        <div class="cont">Hola2</div>
+        <div class="box">
+            <div class="fl"></div>
+            <div class="fr"></div>
+            <div class="effarea"></div>
+        </div>
+        <div class="cont">Hola3</div>
+        <div class="box">
+            <div class="fl"></div>
+            <div class="fr"></div>
+            <div class="effarea"></div>
+        </div>
+        <div class="cont">Hola4</div>
+        <script>
+            //document.getElementById("box").addEventListener("mouseleave",e => rotate(0));
+            //document.getElementById("fl").addEventListener("mouseleave",e => rotate(0));
+            //document.getElementById("fr").addEventListener("mouseleave",e => rotate(0));
+            //document.getElementById("box").addEventListener("mouseover",e => rotate(1));
+            //document.getElementById("fl").addEventListener("mouseover",e => rotate(1));
+            //document.getElementById("fr").addEventListener("mouseover",e => rotate(1));
+
+            // V2
+            // Mouse over
+            //document.getElementById("effarea").addEventListener("mouseleave",e => rotate(0));
+            //document.getElementById("effarea").addEventListener("mouseover",e => rotate(1));
+            //Click
+            //document.getElementById("effarea").addEventListener("click",e => toggle_rotate());
+
+            /////////////////////////
+            // V3 - Multiples boxs //
+            /////////////////////////
+
+            // MouseOver
+            //const arrL = Array.from(document.getElementsByClassName("effarea"));
+            //arrL.forEach(n => {n.addEventListener("mouseleave", e => rotate2(arrL.indexOf(n)));});
+            //const arrO = Array.from(document.getElementsByClassName("effarea"));
+            //arrO.forEach(n => {n.addEventListener("mouseover", e => rotate2(arrO.indexOf(n)));});
+
+            // Click
+            const arr = Array.from(document.getElementsByClassName("effarea"));
+            arr.forEach(n => {n.addEventListener("click", e => rotate2(arr.indexOf(n)));});
+
+        </script>
+    </body>
+</html>
